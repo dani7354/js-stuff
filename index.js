@@ -1,38 +1,53 @@
-const valuesSelectBoxId = "#values";
-var pageNumber = 1;
+const loadNextId = "load-next";
+const totalItems = 10000;
+const pageSize = 100;
+
+var pageNumber = 0;
 
 
 function getValues(page) {
-    let values = [
-        { id: 1, name: "Value 1" },
-        { id: 2, name: "Value 2" },
-        { id: 3, name: "Value 3" },
-        { id: 4, name: "Value 4" },
-        { id: 5, name: "Value 5" },
-        { id: 6, name: "Value 6" },
-        { id: 7, name: "Value 7" },
-        { id: 8, name: "Value 8" },
-        { id: 9, name: "Value 9" },
-        { id: 10, name: "Value 10" },
-    ];
+    let values = [];
+    for (let i = 0; i < totalItems; i++) {
+        let itemNumber = i + 1;
+        values.push({ id: itemNumber, name: `Item ${itemNumber}`});
+    }
 
-    return [values[page - 1]]; // only one item in the array is loaded on each call
+    let startIndex = (page - 1) * pageSize;
+    let endIndex = startIndex + pageSize;
+    if (startIndex < 0 || endIndex > values.length) {
+        return [];
+    }
+
+    return values.slice(startIndex, endIndex);
 }
 
-
-$(document).ready(function () {
-    let selectBox = $(valuesSelectBoxId);
-    selectBox.empty();
-
-    
-    options = getValues(pageNumber);
+function loadNext(selectBox) {
+    pageNumber++;
+    let options = getValues(pageNumber);
     $.each(options, function (index, value) {
-        console.log(value);
         let option = $("<option></option>").val(value.id).text(value.name);
         selectBox.append(option);
     });
 
-    let loadMoreItem = $("<option></option>").val("").text("Indlæs flere...");
+    loadNextOption = $(`#${loadNextId}`).detach();
+    if (options.length !== 0) {
+        loadNextOption.appendTo(selectBox);
+    }
+}
+
+function initializeSelectBox(selectBox) {
+    loadNext(selectBox);
+
+    let loadMoreItem = $("<option></option>").text("Indlæs flere...").attr("id", loadNextId);
+    loadMoreItem.on("mouseover", function() { 
+        loadNext(selectBox) 
+    });
     selectBox.append(loadMoreItem);
+}
+
+
+$(document).ready(function () {
+    var selectBox = $("#values");
+    initializeSelectBox(selectBox);
 });
 
