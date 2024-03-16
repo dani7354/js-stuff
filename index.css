@@ -1,0 +1,21 @@
+select {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #e01616;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+option {
+    background-color: #ffffff;
+    color: #e01616;
+    padding: 12px 20px;
+    border: e01616;
+    cursor: pointer;
+}
+
+option:hover {
+    background-color: #e01616;
+}
