@@ -1,4 +1,5 @@
 const loadNextId = "load-next";
+const selectBoxId = "values";
 const totalItems = 10000;
 const pageSize = 100;
 
@@ -6,11 +7,8 @@ var pageNumber = 0;
 
 
 function getValues(page) {
-    let values = [];
-    for (let i = 0; i < totalItems; i++) {
-        let itemNumber = i + 1;
-        values.push({ id: itemNumber, name: `Item ${itemNumber}`});
-    }
+    let values = [...Array(totalItems).keys()]
+        .map(x => { return { id: x + 1, name: `Item ${x + 1}`}});
 
     let startIndex = (page - 1) * pageSize;
     let endIndex = startIndex + pageSize;
@@ -25,7 +23,10 @@ function loadNext(selectBox) {
     pageNumber++;
     let options = getValues(pageNumber);
     $.each(options, function (index, value) {
-        let option = $("<option></option>").val(value.id).text(value.name);
+        let option = $("<option></option>")
+            .val(value.id)
+            .text(value.name);
+
         selectBox.append(option);
     });
 
@@ -38,16 +39,19 @@ function loadNext(selectBox) {
 function initializeSelectBox(selectBox) {
     loadNext(selectBox);
 
-    let loadMoreItem = $("<option></option>").text("Indlæs flere...").attr("id", loadNextId);
-    loadMoreItem.on("mouseover", function() { 
-        loadNext(selectBox) 
+    let loadMoreItem = $("<option></option>")
+        .text("Indlæs flere...")
+        .attr("id", loadNextId);
+
+    loadMoreItem.on("mouseover", function(e) {
+        e.preventDefault();
+        loadNext(selectBox); 
     });
     selectBox.append(loadMoreItem);
 }
 
 
 $(document).ready(function () {
-    var selectBox = $("#values");
+    var selectBox = $(`#${selectBoxId}`);
     initializeSelectBox(selectBox);
 });
-
